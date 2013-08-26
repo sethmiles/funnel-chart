@@ -30,8 +30,16 @@ Funnelchart = function () {
       this.createScales()
       this.data = this.sortData(this.data)
       this.visualization = d3.select(this.el)
-        .style('width', this.width + this.margin.left + this.margin.right)
-        .style('height', this.height + this.margin.top + this.margin.bottom)
+        .append('div')
+        .attr('class', 'segments')
+          .style('width', this.width + this.margin.left + this.margin.right)
+          .style('height', this.height + this.margin.top + this.margin.bottom)
+
+      this.visualizationAxis = d3.select(this.el)
+        .append('div')
+        .attr('class', 'axis-container')
+          .style('width', this.width + this.margin.left + this.margin.right)
+          .style('height', this.axisHeight)
 
       this.$el.css({
         position: 'relative'
@@ -45,6 +53,8 @@ Funnelchart = function () {
       this.funnelSegmentLengthScale
         .range([this.funnelSegmentMaxLength, 0])
         .domain(this.getFunnelLengthDomain())
+
+      this.renderAxis();
 
       this.chart = this.visualization.selectAll('.segment')
         .data(this.data, function(d){
@@ -122,6 +132,30 @@ Funnelchart = function () {
           .remove()
     },
 
+    renderAxis: function () {
+      var that = this
+
+      this.axis = this.visualizationAxis.selectAll('.axis')
+        .data(this.data, function(d){
+          return d[that.titleAccessor]
+        })
+
+      this.axis
+        .enter().append('div')
+        .attr('class', 'axis')
+        .each(function (d) {
+          $(this).text(d[that.titleAccessor]);
+        })
+
+      this.axis.transition().duration(this.transitionDuration)
+        .each(function (d) {
+          $(this).text(d[that.titleAccessor]);
+        })
+
+      this.axis.exit()
+        .remove()        
+    },
+
     setOrientation: function () {
       if(this.orientation == 'vertical'){
         this.funnelSegmentMaxLength = this.width
@@ -135,7 +169,12 @@ Funnelchart = function () {
     },
 
     setFunnelSegmentGirth: function () {
-      this.funnelSegmentGirth = this.height/this.data.length
+      if(this.orientation == 'vertical'){
+        this.funnelSegmentGirth = this.height / this.data.length
+      } else {
+        this.funnelSegmentGirth = this.width / this.data.length
+      }
+      
     },
 
     setDimensions: function () {
