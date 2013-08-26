@@ -1,0 +1,64 @@
+<html>
+  <head>
+    <title>Funnel Chart Demo</title>
+    <script src="http://zeptojs.com/zepto.min.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="data.js"></script>
+    <script src="funnelchart.js"></script>
+  </head>
+  <body>
+    <style>
+
+    </style>
+    <div class="demo"></div>
+    <input id="update" type="button" value="Update Graph" />
+    <input id="layout" type="button" value="Switch Vert/Horiz Layout" />
+    <script>
+      var myFunnelchart = new Funnelchart({
+        width: 300,
+        height: 300,
+        data: data1,
+        orientation: 'vertical'
+      })
+
+      $('.demo').append(myFunnelchart.$el);
+
+      $('#update').on('click', function (evt) {
+        var data = data1;
+        $(evt.target).toggleClass('clicked');
+        if($(evt.target).hasClass('clicked')){
+          data = window.data2
+        }
+        myFunnelchart.setData(data);
+        myFunnelchart.render();
+      })
+
+      $('#layout').on('click', function (evt) {
+        $(evt.target).toggleClass('clicked');
+        if($(evt.target).hasClass('clicked')){
+          myFunnelchart.orientation = 'horizontal'
+        } else {
+          myFunnelchart.orientation = 'vertical'
+        }
+        myFunnelchart.render();
+      })
+    </script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
