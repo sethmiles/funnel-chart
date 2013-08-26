@@ -62,7 +62,7 @@ Funnelchart = function () {
           if(that.orientation == 'vertical'){
             var totalWidth = ((that.width - that.margin.left - that.margin.right) / 2)
             var segmentWidth = (that.funnelSegmentLengthScale(d[that.valueAccessor]) / 2)
-            return totalWidth - segmentWidth + that.margin.left
+            return totalWidth - segmentWidth + that.margin.left + that.margin.right
           } else {
             return that.margin.left + (index * that.funnelSegmentGirth)
           }
@@ -100,7 +100,7 @@ Funnelchart = function () {
           } else {
             var totalHeight = ((that.height - that.margin.top - that.margin.bottom) / 2)
             var segmentHeight = (that.funnelSegmentLengthScale(d[that.valueAccessor]) / 2)
-            return totalHeight - segmentHeight + that.margin.top
+            return totalHeight - segmentHeight + that.margin.top + that.margin.bottom
           }
           
         })
@@ -108,7 +108,7 @@ Funnelchart = function () {
           if(that.orientation == 'vertical'){
             var totalWidth = ((that.width - that.margin.left - that.margin.right) / 2)
             var segmentWidth = (that.funnelSegmentLengthScale(d[that.valueAccessor]) / 2)
-            return totalWidth - segmentWidth + that.margin.left
+            return totalWidth - segmentWidth + that.margin.left + that.margin.right
           } else {
             return that.margin.left + (index * that.funnelSegmentGirth)
           }
