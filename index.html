@@ -15,10 +15,11 @@
     <input id="layout" type="button" value="Switch Vert/Horiz Layout" />
     <script>
       var myFunnelchart = new Funnelchart({
-        width: 300,
+        width: 700,
         height: 300,
         data: data1,
-        orientation: 'vertical'
+        orientation: 'vertical',
+        axisSize: 200
       })
 
       $('.demo').append(myFunnelchart.$el);
