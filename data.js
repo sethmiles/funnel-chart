@@ -30,7 +30,7 @@ window.data2 = [
   {
     title: 'Website visits',
     value: 100,
-    color: 'green'
+    color: 'blue'
   },
   {
     title: 'Downloads',
@@ -41,6 +41,16 @@ window.data2 = [
     title: 'Requested price list',
     value: 85,
     color: 'orange'
+  },
+  {
+    title: 'Called in',
+    value: 75,
+    color: 'green'
+  },
+  {
+    title: 'Made Store Visit',
+    value: 65,
+    color: 'pink'
   },
   {
     title: 'Invoice sent',
