@@ -13,6 +13,7 @@ Funnelchart = function () {
     },
     titleAccessor: 'title',
     valueAccessor: 'value',
+    colorAccessor: 'color',
     transitionDuration: 500,
     orientation: 'vertical',
 
@@ -76,7 +77,7 @@ Funnelchart = function () {
           }
           if(that.orientation == 'vertical'){
             $(this).animate({
-              borderTop: that.funnelSegmentGirth + 'px solid ' + d.color,
+              borderTop: that.funnelSegmentGirth + 'px solid ' + d[that.colorAccessor],
               borderLeft: sideWidth + 'px solid transparent',
               borderRight: sideWidth + 'px solid transparent',
               height: 0,
@@ -84,7 +85,7 @@ Funnelchart = function () {
             })  
           } else {
             $(this).animate({
-              borderLeft: that.funnelSegmentGirth + 'px solid ' + d.color,
+              borderLeft: that.funnelSegmentGirth + 'px solid ' + d[that.colorAccessor],
               borderTop: sideWidth + 'px solid transparent',
               borderBottom: sideWidth + 'px solid transparent',
               width: 0,
@@ -114,8 +115,9 @@ Funnelchart = function () {
 
       this.chart
         .exit().transition().duration(this.transitionDuration)
-          .style('width', 0)
-          .style('height', 0)
+          .style('top', 0)
+          .style('left', 0)
+          .style('opacity', 0)
           .remove()
     },
 
