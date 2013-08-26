@@ -28,6 +28,7 @@ Funnelchart = function () {
     setup: function () {
       this.setDimensions()
       this.createScales()
+      this.data = this.sortData(this.data)
       this.visualization = d3.select(this.el)
         .style('width', this.width + this.margin.left + this.margin.right)
         .style('height', this.height + this.margin.top + this.margin.bottom)
@@ -155,7 +156,14 @@ Funnelchart = function () {
     },
 
     setData: function (data) {
-      this.data = data
+      this.data = this.sortData(data);
+    },
+
+    sortData: function (data) {
+      var that = this;
+      return data.sort(function(a,b){ 
+        return (a[that.valueAccessor] > b[that.valueAccessor] ? 0 : 1)
+      })
     },
 
     setOptions: function (options) {
