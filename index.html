@@ -8,7 +8,12 @@
   </head>
   <body>
     <style>
-
+      .axis {
+        text-align: center;
+      }
+      .segment:hover {
+        opacity:.3;
+      }
     </style>
     <div class="demo"></div>
     <input id="update" type="button" value="Update Graph" />
@@ -19,7 +24,7 @@
         height: 300,
         data: data1,
         orientation: 'vertical',
-        axisSize: 200
+        axisSize: 150
       })
 
       $('.demo').append(myFunnelchart.$el);

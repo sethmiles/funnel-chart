@@ -16,10 +16,17 @@ Funnelchart = function () {
     colorAccessor: 'color',
     transitionDuration: 500,
     orientation: 'vertical',
+    showAxis: true,
+    axisSize: 75,
 
     initialize: function (options) {
       this.setOptions(options)
       this.$el = $('<div></div>').addClass('funnelchart')
+        .css({
+          position: 'relative',
+          width: this.width,
+          height: this.height
+        })
       this.el = this.$el[0]
       this.setup()
       this.render()
@@ -31,30 +38,64 @@ Funnelchart = function () {
       this.data = this.sortData(this.data)
       this.visualization = d3.select(this.el)
         .append('div')
-        .attr('class', 'segments')
-          .style('width', this.width + this.margin.left + this.margin.right)
-          .style('height', this.height + this.margin.top + this.margin.bottom)
+          .attr('class', 'segments')
+          .style('position', 'absolute')
+          
 
       this.visualizationAxis = d3.select(this.el)
         .append('div')
-        .attr('class', 'axis-container')
-          .style('width', this.width + this.margin.left + this.margin.right)
-          .style('height', this.axisHeight)
+          .attr('class', 'axis-container')
+          .style('position', 'absolute')
 
-      this.$el.css({
-        position: 'relative'
-      })
+      this.visualizationAxisContainer = d3.select(this.visualizationAxis[0][0])
+        .append('div')
+          .style('position', 'relative')
     },
 
     render: function () {
       var that = this
       this.setOrientation()
-      this.setFunnelSegmentGirth()
+
+      var axisWidth, axisHeight, funnelWidth, funnelHeight;
+      if(this.showAxis){
+        if(this.orientation == 'vertical') {
+          funnelWidth = this.width - this.axisSize
+          funnelHeight = this.height
+          axisWidth = this.axisSize
+          axisHeight = this.height
+        } else {
+          funnelWidth = this.width
+          funnelHeight = this.height - this.axisSize
+          axisWidth = this.width
+          axisHeight = this.axisSize
+        }  
+
+        this.visualizationAxis
+            .style('width', axisWidth)
+            .style('height', axisHeight)
+          .transition()
+            .style('top', (this.orientation == 'vertical' ? this.margin.top : funnelHeight + this.margin.top))
+            .style('left', this.margin.left)
+
+        this.setFunnelSegmentGirth(funnelWidth, funnelHeight)
+        this.renderAxis(funnelHeight);
+
+      } else {
+        funnelWidth = this.width + this.margin.left + this.margin.right
+        funnelHeight = this.height + this.margin.top + this.margin.bottom
+      }
+
+      this.setFunnelSegmentGirth(funnelWidth, funnelHeight)
+
       this.funnelSegmentLengthScale
-        .range([this.funnelSegmentMaxLength, 0])
+        .range([(that.orientation == 'vertical' ? funnelWidth : funnelHeight), 0])
         .domain(this.getFunnelLengthDomain())
 
-      this.renderAxis();
+      this.visualization.transition()
+        .style('width', funnelWidth)
+        .style('height', funnelHeight)
+        .style('top', this.margin.top)
+        .style('left', (this.orientation == 'vertical' ? this.axisSize + this.margin.left : this.margin.left))
 
       this.chart = this.visualization.selectAll('.segment')
         .data(this.data, function(d){
@@ -67,14 +108,14 @@ Funnelchart = function () {
           return 'segment ' + d[that.titleAccessor].split(' ').join('-').toLowerCase()
         })
         .style('position', 'absolute')
-        .style('top', that.margin.top)
+        .style('top', 0)
         .style('left', function(d, index) {
           if(that.orientation == 'vertical'){
-            var totalWidth = ((that.width - that.margin.left - that.margin.right) / 2)
+            var totalWidth = (funnelWidth / 2)
             var segmentWidth = (that.funnelSegmentLengthScale(d[that.valueAccessor]) / 2)
-            return totalWidth - segmentWidth + that.margin.left + that.margin.right
+            return totalWidth - segmentWidth
           } else {
-            return that.margin.left + (index * that.funnelSegmentGirth)
+            return index * that.funnelSegmentGirth
           }
         })
 
@@ -92,7 +133,8 @@ Funnelchart = function () {
               borderLeft: sideWidth + 'px solid transparent',
               borderRight: sideWidth + 'px solid transparent',
               height: 0,
-              width: width
+              width: width,
+              zIndex: index
             })  
           } else {
             $(this).animate({
@@ -100,27 +142,28 @@ Funnelchart = function () {
               borderTop: sideWidth + 'px solid transparent',
               borderBottom: sideWidth + 'px solid transparent',
               width: 0,
-              height: width
+              height: width,
+              zIndex: index
             })
           }
         })
         .style('top', function(d, index) {
           if(that.orientation == 'vertical'){
-            return that.margin.bottom + (index * that.funnelSegmentGirth)
+            return index * that.funnelSegmentGirth
           } else {
-            var totalHeight = ((that.height - that.margin.top - that.margin.bottom) / 2)
+            var totalHeight = (funnelHeight / 2)
             var segmentHeight = (that.funnelSegmentLengthScale(d[that.valueAccessor]) / 2)
-            return totalHeight - segmentHeight + that.margin.top + that.margin.bottom
+            return totalHeight - segmentHeight
           }
           
         })
         .style('left', function(d, index) {
           if(that.orientation == 'vertical'){
-            var totalWidth = ((that.width - that.margin.left - that.margin.right) / 2)
+            var totalWidth = (funnelWidth / 2)
             var segmentWidth = (that.funnelSegmentLengthScale(d[that.valueAccessor]) / 2)
-            return totalWidth - segmentWidth + that.margin.left + that.margin.right
+            return totalWidth - segmentWidth
           } else {
-            return that.margin.left + (index * that.funnelSegmentGirth)
+            return index * that.funnelSegmentGirth
           }
         })
 
@@ -132,10 +175,10 @@ Funnelchart = function () {
           .remove()
     },
 
-    renderAxis: function () {
+    renderAxis: function (funnelHeight) {
       var that = this
 
-      this.axis = this.visualizationAxis.selectAll('.axis')
+      this.axis = this.visualizationAxisContainer.selectAll('.axis')
         .data(this.data, function(d){
           return d[that.titleAccessor]
         })
@@ -144,15 +187,56 @@ Funnelchart = function () {
         .enter().append('div')
         .attr('class', 'axis')
         .each(function (d) {
-          $(this).text(d[that.titleAccessor]);
+          $(this).html('<div class="title">' + d[that.titleAccessor] + '</div><div class="value">' + d[that.valueAccessor] + '</div>');
+          $(this).animate({
+            height: (that.orientation == 'vertical' ? that.funnelSegmentGirth + 'px' : that.axisSize + 'px'),
+            width: (that.orientation == 'vertical' ? that.axisSize + 'px' : that.funnelSegmentGirth + 'px'),
+            position: 'absolute'
+          })
         })
+        .style('top', function (d, index) {
+          if(that.orientation == 'vertical'){
+            return index * that.funnelSegmentGirth
+          } else {
+            return funnelHeight
+          }
+        })
+        .style('left', function (d, index) {
+          if(that.orientation == 'vertical'){ 
+            return 0
+          } else {
+            return that.funnelSegmentGirth * index
+          }
+        })
+        .style('opacity', 0)
 
       this.axis.transition().duration(this.transitionDuration)
         .each(function (d) {
-          $(this).text(d[that.titleAccessor]);
+          $(this).html('<div class="title">' + d[that.titleAccessor] + '</div><div class="value">' + d[that.valueAccessor] + '</div>');
+          $(this).animate({
+            height: (that.orientation == 'vertical' ? that.funnelSegmentGirth + 'px' : that.axisSize + 'px'),
+            width: (that.orientation == 'vertical' ? that.axisSize + 'px' : that.funnelSegmentGirth + 'px'),
+            position: 'absolute'
+          })
         })
+        .style('top', function (d, index) {
+          if(that.orientation == 'vertical'){
+            return index * that.funnelSegmentGirth
+          } else {
+            return 0
+          }
+        })
+        .style('left', function (d, index) {
+          if(that.orientation == 'vertical'){ 
+            return 0
+          } else {
+            return that.funnelSegmentGirth * index
+          }
+        })
+        .style('opacity', 1)
 
-      this.axis.exit()
+      this.axis.exit().transition()
+        .style('opacity',0)
         .remove()        
     },
 
@@ -168,11 +252,11 @@ Funnelchart = function () {
       this.funnelSegmentLengthScale = d3.scale.linear()
     },
 
-    setFunnelSegmentGirth: function () {
+    setFunnelSegmentGirth: function (funnelWidth, funnelHeight) {
       if(this.orientation == 'vertical'){
-        this.funnelSegmentGirth = this.height / this.data.length
+        this.funnelSegmentGirth = funnelHeight / this.data.length
       } else {
-        this.funnelSegmentGirth = this.width / this.data.length
+        this.funnelSegmentGirth = funnelWidth / this.data.length
       }
       
     },
