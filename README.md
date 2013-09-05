@@ -1,6 +1,8 @@
 Funnel Chart
 =========
 
+Check out the [demo](http://sethhoward1988.github.io/workspace/funnel-chart-demo/).
+
 This funnel chart contains the essential code to build a reusable data driven bar chart that can be updated. The chart is built on d3.js and follows some backbone.js naming conventions.
 
 ###Dependencies
