@@ -7,7 +7,7 @@ This funnel chart contains the essential code to build a reusable data driven ba
 
 ###Dependencies
 
-Barchart.js requires d3.js and jQuery, zepto, or some other jquery flavor. If you do not use jQuery, the code can be slightly altered to accommodate. (Search for "$" in the code)
+Funnelchart.js requires d3.js and jQuery, zepto, or some other jquery flavor. If you do not use jQuery, the code can be slightly altered to accommodate. (Search for "$" in the code)
 
 #How to Use It
 
